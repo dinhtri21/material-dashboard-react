@@ -62,7 +62,7 @@ const routes = [
     type: "collapse",
     name: "Todo List",
     key: "todo-list",
-    icon: <Icon fontSize="small">checklist</Icon>,
+    icon: <Icon fontSize="small">checklisto</Icon>,
     route: "/todo-list",
     component: <TodoList />,
   },
