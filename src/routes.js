@@ -44,6 +44,7 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import TodoList from "layouts/todo-list";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -56,6 +57,14 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Todo List",
+    key: "todo-list",
+    icon: <Icon fontSize="small">checklist</Icon>,
+    route: "/todo-list",
+    component: <TodoList />,
   },
   {
     type: "collapse",
