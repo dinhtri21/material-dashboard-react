@@ -83,7 +83,7 @@ export default function UsersTable() {
           <MDBox>
             <DataTable
               table={{ columns, rows }}
-              isSorted={true}
+              isSorted={false}
               entriesPerPage={false}
               showTotalEntries={false}
               noEndBorder

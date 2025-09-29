@@ -173,7 +173,7 @@ export default function useTableData() {
 
   // Tạo header với tính năng sort
   const createSortableHeader = (label, property) => {
-    const canSort = ["hoTen", "email", "vaiTro"].includes(property);
+    const canSort = ["hoTen", "email"].includes(property);
 
     if (canSort) {
       return (
@@ -181,6 +181,18 @@ export default function useTableData() {
           active={orderBy === property}
           direction={orderBy === property ? order : "asc"}
           onClick={() => handleSort(property)}
+          sx={{
+            "& .MuiTableSortLabel-icon": {
+              fontSize: "1rem !important",
+              opacity: "0 !important", // Ẩn icon mặc định
+            },
+            "&:hover .MuiTableSortLabel-icon": {
+              opacity: "0.5 !important", // Hiện icon khi hover
+            },
+            "&.Mui-active .MuiTableSortLabel-icon": {
+              opacity: "1 !important", // Hiện rõ icon khi đang active
+            },
+          }}
         >
           <MDTypography
             variant="caption"
@@ -206,7 +218,7 @@ export default function useTableData() {
     {
       Header: createSortableHeader("ID", "id"),
       accessor: "id",
-      width: "15%",
+      width: "10%",
       align: "center",
     },
     {
@@ -218,7 +230,7 @@ export default function useTableData() {
     {
       Header: createSortableHeader("Email", "email"),
       accessor: "email",
-      width: "35%",
+      width: "30%",
       align: "left",
     },
     {
@@ -239,7 +251,7 @@ export default function useTableData() {
         </MDTypography>
       ),
       accessor: "actions",
-      width: "5%",
+      width: "20%",
       align: "center",
     },
   ];
