@@ -9,7 +9,7 @@ import MDTypography from "components/MDTypography";
 import PropTypes from "prop-types";
 import { fetchUsersAPI } from "../services/usersService";
 
-export default function useTableData() {
+export default function useTableData(showSnackbar) {
   // State quản lý dữ liệu
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -151,6 +151,9 @@ export default function useTableData() {
   const handleDeleteUser = (userId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
       setUsers(users.filter((user) => user.id !== userId));
+      if (showSnackbar) {
+        showSnackbar("Xóa người dùng thành công!", "error");
+      }
     }
   };
 

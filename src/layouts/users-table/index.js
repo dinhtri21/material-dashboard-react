@@ -1,8 +1,11 @@
+import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import TablePagination from "@mui/material/TablePagination";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
@@ -13,6 +16,20 @@ import tableData from "./data/tableData";
 import CreateOrUpdateButton from "./components/CreateOrUpdateButton";
 
 export default function UsersTable() {
+  // State cho Snackbar notifications
+  const [snackbars, setSnackbars] = useState([]);
+
+  // Snackbar functions
+  const showSnackbar = (message, severity = "success") => {
+    const newSnackbar = {
+      id: Date.now(),
+      message,
+      severity,
+      open: true,
+    };
+    setSnackbars((prev) => [...prev, newSnackbar]);
+  };
+
   const {
     columns,
     rows,
@@ -33,15 +50,26 @@ export default function UsersTable() {
     handleChangePage,
     handleChangeRowsPerPage,
     totalUsers,
-  } = tableData();
+  } = tableData(showSnackbar);
+
+  const handleCloseSnackbar = (snackbarId) => {
+    setSnackbars((prev) =>
+      prev.map((snackbar) => (snackbar.id === snackbarId ? { ...snackbar, open: false } : snackbar))
+    );
+    setTimeout(() => {
+      setSnackbars((prev) => prev.filter((snackbar) => snackbar.id !== snackbarId));
+    }, 150);
+  };
 
   const dialogType = editingUser ? "update" : "create";
 
   const handleFormSubmit = () => {
     if (dialogType === "update") {
       handleUpdateUser();
+      showSnackbar("Đã cập nhật người dùng thành công!", "success");
     } else {
       handleAddUser();
+      showSnackbar("Đã thêm người dùng thành công!", "success");
     }
   };
 
@@ -118,6 +146,26 @@ export default function UsersTable() {
           onClose={() => setOpenDialog(false)}
           loading={loading}
         />
+
+        {/* Snackbar Notifications */}
+        {snackbars.map((snackbar) => (
+          <Snackbar
+            key={snackbar.id}
+            open={snackbar.open}
+            autoHideDuration={6000}
+            onClose={() => handleCloseSnackbar(snackbar.id)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            <Alert
+              onClose={() => handleCloseSnackbar(snackbar.id)}
+              severity={snackbar.severity}
+              sx={{ width: "100%" }}
+              variant="filled"
+            >
+              {snackbar.message}
+            </Alert>
+          </Snackbar>
+        ))}
       </MDBox>
     </DashboardLayout>
   );
