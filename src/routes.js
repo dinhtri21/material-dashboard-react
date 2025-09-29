@@ -45,6 +45,7 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import TodoList from "layouts/todo-list";
+import UserTables from "layouts/users-table";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -62,9 +63,17 @@ const routes = [
     type: "collapse",
     name: "Todo List",
     key: "todo-list",
-    icon: <Icon fontSize="small">checklisto</Icon>,
+    icon: <Icon fontSize="small">checklist</Icon>,
     route: "/todo-list",
     component: <TodoList />,
+  },
+  {
+    type: "collapse",
+    name: "Users Table",
+    key: "users-table",
+    icon: <Icon fontSize="small">people</Icon>,
+    route: "/users-table",
+    component: <UserTables />,
   },
   {
     type: "collapse",
