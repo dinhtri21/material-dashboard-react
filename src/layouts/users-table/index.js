@@ -86,11 +86,22 @@ function UsersTableContent() {
         await updateUser(editingUser.id, userData);
         showSnackbar("Đã cập nhật người dùng thành công!", "success");
       } else {
-        await createUser({ ...userData, id: Date.now() });
+        await createUser(userData);
         showSnackbar("Đã thêm người dùng thành công!", "success");
       }
     } catch (error) {
       showSnackbar("Có lỗi xảy ra: " + error.message, "error");
+      throw error;
+    }
+  };
+
+  // Thêm handler cho inline update
+  const handleInlineUpdate = async (userId, userData) => {
+    try {
+      await updateUser(userId, userData);
+      showSnackbar("Đã cập nhật thông tin thành công!", "success");
+    } catch (error) {
+      showSnackbar("Có lỗi xảy ra khi cập nhật: " + error.message, "error");
       throw error;
     }
   };
@@ -125,6 +136,7 @@ function UsersTableContent() {
     onEdit: handleOpenEditDialog,
     onDelete: handleDeleteUser,
     onSort: handleSort,
+    onUpdate: handleInlineUpdate, // Thêm handler cho inline editing
   });
 
   return (
