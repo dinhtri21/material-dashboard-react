@@ -44,6 +44,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import UsersTable from "layouts/users-table";
 import TodoList from "layouts/todo-list";
+import UserTableAPI from "layouts/user-table-api";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -88,6 +89,19 @@ const routes = [
     component: (
       <ProtectedRoute>
         <UsersTable />
+      </ProtectedRoute>
+    ),
+    protected: true,
+  },
+  {
+    type: "collapse",
+    name: "User API",
+    key: "user-table-api",
+    icon: <Icon fontSize="small">api</Icon>,
+    route: "/user-table-api",
+    component: (
+      <ProtectedRoute>
+        <UserTableAPI />
       </ProtectedRoute>
     ),
     protected: true,
