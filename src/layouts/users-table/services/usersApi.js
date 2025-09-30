@@ -1,3 +1,4 @@
+// Sử dụng MockAPI.io hoặc JSONPlaceholder
 const API_BASE_URL = "https://jsonplaceholder.typicode.com";
 
 // Helper function để chuyển đổi data từ JSONPlaceholder sang format của chúng ta
@@ -6,7 +7,7 @@ function transformUser(user) {
     id: user.id,
     hoTen: user.name,
     email: user.email,
-    vaiTro: user.id % 4 === 0 ? "Admin" : user.id % 3 === 0 ? "Guest" : "User", // Random role
+    vaiTro: user.id % 3 === 0 ? "Admin" : "User", // Random role
     ngaySinh: new Date(1990 + (user.id % 20), user.id % 12, (user.id % 28) + 1)
       .toISOString()
       .split("T")[0], // Random birth date

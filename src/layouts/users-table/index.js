@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import Card from "@mui/material/Card";
@@ -9,15 +9,39 @@ import Alert from "@mui/material/Alert";
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
+import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
+import { UsersProvider, useUsers } from "./context/UsersContext";
+import { useUsersOperations } from "./hooks/useUsersOperations";
+import UserForm from "./components/UserForm";
 import tableData from "./data/tableData";
-import CreateOrUpdateButton from "./components/CreateOrUpdateButton";
 
-export default function UsersTable() {
-  // State cho Snackbar notifications
+// Component chính sử dụng Context
+function UsersTableContent() {
+  const { searchTerm, page, rowsPerPage } = useUsers();
+
+  const {
+    loadUsers,
+    createUser,
+    updateUser,
+    deleteUser,
+    setSearchTerm,
+    setPage,
+    setRowsPerPage,
+    setOrder,
+  } = useUsersOperations();
+
+  // State cho UI
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [snackbars, setSnackbars] = useState([]);
+
+  // Load dữ liệu khi component mount
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
 
   // Snackbar functions
   const showSnackbar = (message, severity = "success") => {
@@ -30,28 +54,6 @@ export default function UsersTable() {
     setSnackbars((prev) => [...prev, newSnackbar]);
   };
 
-  const {
-    columns,
-    rows,
-    loading,
-    searchTerm,
-    setSearchTerm,
-    openDialog,
-    setOpenDialog,
-    editingUser,
-    formData,
-    setFormData,
-    handleAddUser,
-    handleUpdateUser,
-    openAddDialog,
-    // Pagination
-    page,
-    rowsPerPage,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    totalUsers,
-  } = tableData(showSnackbar);
-
   const handleCloseSnackbar = (snackbarId) => {
     setSnackbars((prev) =>
       prev.map((snackbar) => (snackbar.id === snackbarId ? { ...snackbar, open: false } : snackbar))
@@ -61,23 +63,75 @@ export default function UsersTable() {
     }, 150);
   };
 
-  const dialogType = editingUser ? "update" : "create";
+  // Dialog handlers
+  const handleOpenAddDialog = () => {
+    setEditingUser(null);
+    setOpenDialog(true);
+  };
 
-  const handleFormSubmit = () => {
-    if (dialogType === "update") {
-      handleUpdateUser();
-      showSnackbar("Đã cập nhật người dùng thành công!", "success");
-    } else {
-      handleAddUser();
-      showSnackbar("Đã thêm người dùng thành công!", "success");
+  const handleOpenEditDialog = (user) => {
+    setEditingUser(user);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setEditingUser(null);
+  };
+
+  // CRUD handlers
+  const handleSubmitUser = async (userData) => {
+    try {
+      if (editingUser) {
+        await updateUser(editingUser.id, userData);
+        showSnackbar("Đã cập nhật người dùng thành công!", "success");
+      } else {
+        await createUser({ ...userData, id: Date.now() });
+        showSnackbar("Đã thêm người dùng thành công!", "success");
+      }
+    } catch (error) {
+      showSnackbar("Có lỗi xảy ra: " + error.message, "error");
+      throw error;
     }
   };
+
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
+      try {
+        await deleteUser(userId);
+        showSnackbar("Xóa người dùng thành công!", "success");
+      } catch (error) {
+        showSnackbar("Có lỗi xảy ra khi xóa: " + error.message, "error");
+      }
+    }
+  };
+
+  // Pagination handlers
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+  };
+
+  // Sort handler
+  const handleSort = (property, direction) => {
+    setOrder(property, direction);
+  };
+
+  // Sử dụng hook tableData với DataTable cũ
+  const { columns, rows, totalUsers } = tableData({
+    onEdit: handleOpenEditDialog,
+    onDelete: handleDeleteUser,
+    onSort: handleSort,
+  });
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={6} pb={3}>
-        {/* 5. Search nâng cao */}
+        {/* Search và Add button */}
         <MDBox mb={3}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={8}>
@@ -97,8 +151,7 @@ export default function UsersTable() {
                 color="success"
                 fullWidth
                 startIcon={<AddIcon />}
-                onClick={openAddDialog}
-                disabled={loading}
+                onClick={handleOpenAddDialog}
               >
                 Thêm Người Dùng
               </MDButton>
@@ -106,7 +159,7 @@ export default function UsersTable() {
           </Grid>
         </MDBox>
 
-        {/* 1. Table */}
+        {/* DataTable - sử dụng component cũ */}
         <Card>
           <MDBox>
             <DataTable
@@ -115,10 +168,9 @@ export default function UsersTable() {
               entriesPerPage={false}
               showTotalEntries={false}
               noEndBorder
-              canSearch={false}
             />
 
-            {/* 2. (Pagination) */}
+            {/* Pagination */}
             <TablePagination
               component="div"
               count={totalUsers}
@@ -136,15 +188,12 @@ export default function UsersTable() {
           </MDBox>
         </Card>
 
-        {/* 2. Thêm sửa */}
-        <CreateOrUpdateButton
+        {/* User Form Dialog với Formik */}
+        <UserForm
           open={openDialog}
-          type={dialogType}
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleFormSubmit}
-          onClose={() => setOpenDialog(false)}
-          loading={loading}
+          user={editingUser}
+          onSubmit={handleSubmitUser}
+          onClose={handleCloseDialog}
         />
 
         {/* Snackbar Notifications */}
@@ -168,5 +217,14 @@ export default function UsersTable() {
         ))}
       </MDBox>
     </DashboardLayout>
+  );
+}
+
+// Component wrapper với Provider
+export default function UsersTable() {
+  return (
+    <UsersProvider>
+      <UsersTableContent />
+    </UsersProvider>
   );
 }
