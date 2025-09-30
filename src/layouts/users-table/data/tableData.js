@@ -6,9 +6,11 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import { useUsers } from "../context/UsersContext";
-import { createUserValidationSchema } from "../validation/userSchema";
 import PropTypes from "prop-types";
+
+// Import từ src chung
+import { useUsers } from "../../../context/usersContext";
+import { createUserValidationSchema } from "../validation/userSchema";
 
 // Component hiển thị vai trò với màu sắc
 const VaiTro = ({ vaiTro }) => {

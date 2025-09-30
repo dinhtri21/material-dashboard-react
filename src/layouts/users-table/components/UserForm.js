@@ -1,19 +1,20 @@
-import { Formik, Form } from "formik";
-import PropTypes from "prop-types";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  MenuItem,
   Grid,
-  Button,
+  MenuItem,
+  CircularProgress,
 } from "@mui/material";
-import MDBox from "components/MDBox";
+import { Formik, Form } from "formik";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import PropTypes from "prop-types";
+
+// Import từ src/context thay vì local
+import { useUsers } from "context";
 import { createUserValidationSchema } from "../validation/userSchema";
-import { useUsers } from "../context/UsersContext";
 
 const vaiTroOptions = [
   { value: "Admin", label: "Admin" },
@@ -48,104 +49,104 @@ function UserForm({ open, user, onSubmit, onClose, loading = false }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{isEditing ? "Cập nhật người dùng" : "Thêm người dùng mới"}</DialogTitle>
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {({ values, errors, touched, handleChange, handleBlur, isSubmitting, isValid }) => (
+        {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
           <Form>
-            <DialogTitle>{isEditing ? "Chỉnh sửa người dùng" : "Thêm người dùng mới"}</DialogTitle>
-
             <DialogContent>
-              <MDBox pt={2}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <TextField
-                      name="hoTen"
-                      label="Họ Tên"
-                      fullWidth
-                      value={values.hoTen}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.hoTen && !!errors.hoTen}
-                      helperText={touched.hoTen && errors.hoTen}
-                      disabled={loading || isSubmitting}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
-                      name="email"
-                      label="Email"
-                      type="email"
-                      fullWidth
-                      value={values.email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.email && !!errors.email}
-                      helperText={touched.email && errors.email}
-                      disabled={loading || isSubmitting}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      name="vaiTro"
-                      label="Vai Trò"
-                      select
-                      fullWidth
-                      value={values.vaiTro}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.vaiTro && !!errors.vaiTro}
-                      helperText={touched.vaiTro && errors.vaiTro}
-                      disabled={loading || isSubmitting}
-                      sx={{
-                        "& .MuiInputBase-root": {
-                          height: 44,
-                        },
-                      }}
-                    >
-                      {vaiTroOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      name="ngaySinh"
-                      label="Ngày Sinh"
-                      type="date"
-                      fullWidth
-                      value={values.ngaySinh}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={touched.ngaySinh && !!errors.ngaySinh}
-                      helperText={touched.ngaySinh && errors.ngaySinh}
-                      disabled={loading || isSubmitting}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                  </Grid>
+              <Grid container spacing={3}>
+                {/* Họ tên */}
+                <Grid item xs={12}>
+                  <MDInput
+                    label="Họ và tên"
+                    name="hoTen"
+                    value={values.hoTen}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.hoTen && Boolean(errors.hoTen)}
+                    helperText={touched.hoTen && errors.hoTen}
+                    fullWidth
+                    required
+                  />
                 </Grid>
-              </MDBox>
+
+                {/* Email */}
+                <Grid item xs={12}>
+                  <MDInput
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
+                    fullWidth
+                    required
+                  />
+                </Grid>
+
+                {/* Vai trò */}
+                <Grid item xs={12} sm={6}>
+                  <MDInput
+                    label="Vai trò"
+                    name="vaiTro"
+                    select
+                    value={values.vaiTro}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.vaiTro && Boolean(errors.vaiTro)}
+                    helperText={touched.vaiTro && errors.vaiTro}
+                    fullWidth
+                    required
+                  >
+                    {vaiTroOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </MDInput>
+                </Grid>
+
+                {/* Ngày sinh */}
+                <Grid item xs={12} sm={6}>
+                  <MDInput
+                    label="Ngày sinh"
+                    name="ngaySinh"
+                    type="date"
+                    value={values.ngaySinh}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.ngaySinh && Boolean(errors.ngaySinh)}
+                    helperText={touched.ngaySinh && errors.ngaySinh}
+                    fullWidth
+                    required
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </DialogContent>
 
-            <DialogActions>
-              <Button onClick={onClose} disabled={loading || isSubmitting}>
+            <DialogActions sx={{ p: 3, pt: 2 }}>
+              <MDButton onClick={onClose} color="secondary">
                 Hủy
-              </Button>
+              </MDButton>
               <MDButton
                 type="submit"
                 variant="gradient"
                 color={isEditing ? "info" : "success"}
-                disabled={!isValid || loading || isSubmitting}
+                disabled={isSubmitting || loading}
+                startIcon={
+                  (isSubmitting || loading) && <CircularProgress size={16} color="inherit" />
+                }
               >
                 {isEditing ? "Cập nhật" : "Thêm mới"}
               </MDButton>

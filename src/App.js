@@ -22,9 +22,11 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
+import { CircularProgress, Box } from "@mui/material";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import Sidenav from "examples/Sidenav";
@@ -33,12 +35,10 @@ import Configurator from "examples/Configurator";
 // Material Dashboard 2 React themes
 import theme from "assets/theme";
 import themeRTL from "assets/theme/theme-rtl";
-
-// Material Dashboard 2 React Dark Mode themes
 import themeDark from "assets/theme-dark";
 import themeDarkRTL from "assets/theme-dark/theme-rtl";
 
-// RTL plugins
+// Material Dashboard 2 React Dark Mode themes
 import rtlPlugin from "stylis-plugin-rtl";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
@@ -49,10 +49,14 @@ import routes from "routes";
 // Material Dashboard 2 React contexts
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
 
+// Auth context
+import { AuthProvider, useAuth } from "context/authContext";
+
 // Images
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
+// Main App Component
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
   const {
@@ -65,9 +69,11 @@ export default function App() {
     whiteSidenav,
     darkMode,
   } = controller;
+
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
   // Cache for the rtl
   useMemo(() => {
@@ -146,17 +152,37 @@ export default function App() {
     </MDBox>
   );
 
+  // Loading screen khi đang check authentication
+  if (authLoading) {
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+        bgcolor="background.default"
+      >
+        <CircularProgress size={60} color="info" />
+        <MDTypography variant="h6" color="text" mt={2}>
+          Đang kiểm tra đăng nhập...
+        </MDTypography>
+      </Box>
+    );
+  }
+
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
         <CssBaseline />
-        {layout === "dashboard" && (
+        {/* Chỉ hiển thị Sidenav khi authenticated và layout = dashboard */}
+        {layout === "dashboard" && isAuthenticated && (
           <>
             <Sidenav
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
               brandName="Material Dashboard 2"
-              routes={routes}
+              routes={routes.filter((route) => route.protected)} // Chỉ hiển thị protected routes trong sidenav
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
             />
@@ -167,20 +193,24 @@ export default function App() {
         {layout === "vr" && <Configurator />}
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          <Route
+            path="*"
+            element={<Navigate to={isAuthenticated ? "/dashboard" : "/authentication/sign-in"} />}
+          />
         </Routes>
       </ThemeProvider>
     </CacheProvider>
   ) : (
     <ThemeProvider theme={darkMode ? themeDark : theme}>
       <CssBaseline />
-      {layout === "dashboard" && (
+      {/* Chỉ hiển thị Sidenav khi authenticated và layout = dashboard */}
+      {layout === "dashboard" && isAuthenticated && (
         <>
           <Sidenav
             color={sidenavColor}
             brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
             brandName="Material Dashboard 2"
-            routes={routes}
+            routes={routes.filter((route) => route.protected)} // Chỉ hiển thị protected routes trong sidenav
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
           />
@@ -191,7 +221,10 @@ export default function App() {
       {layout === "vr" && <Configurator />}
       <Routes>
         {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route
+          path="*"
+          element={<Navigate to={isAuthenticated ? "/dashboard" : "/authentication/sign-in"} />}
+        />
       </Routes>
     </ThemeProvider>
   );

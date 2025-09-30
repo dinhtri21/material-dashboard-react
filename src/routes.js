@@ -24,15 +24,13 @@ Coded by www.creative-tim.com
   1. The `type` key with the `collapse` value is used for a route.
   2. The `type` key with the `title` value is used for a title inside the Sidenav. 
   3. The `type` key with the `divider` value is used for a divider between Sidenav items.
-  4. The `name` key is used for the name of the route on the Sidenav.
-  5. The `key` key is used for the key of the route (It will help you with the key prop inside a loop).
-  6. The `icon` key is used for the icon of the route on the Sidenav, you have to add a node.
-  7. The `collapse` key is used for making a collapsible item on the Sidenav that has other routes
-  inside (nested routes), you need to pass the nested routes inside an array as a value for the `collapse` key.
-  8. The `route` key is used to store the route location which is used for the react router.
-  9. The `href` key is used to store the external links location.
-  10. The `title` key is only for the item with the type of `title` and its used for the title text on the Sidenav.
-  10. The `component` key is used to store the component of its route.
+  4. The `name` prop is used for the name of the route on the Sidenav.
+  5. The `key` prop is used for the key of the route (It will help you with the key prop inside a loop).
+  6. The `icon` prop is used for the icon of the route on the Sidenav, you have to add a node.
+  7. The `collapse` prop is used for making a collapsible item on the Sidenav that has other routes
+     inside (nested routes), you need to pass the nested routes inside an array as a value for the `collapse` prop.
+  8. The `route` prop is used for the route path on the browser.
+  9. The `component` prop is used for the component to render.
 */
 
 // Material Dashboard 2 React layouts
@@ -44,11 +42,15 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import UsersTable from "layouts/users-table";
 import TodoList from "layouts/todo-list";
-import UserTables from "layouts/users-table";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+
+// Protected Route Components
+import ProtectedRoute from "components/ProtectedRoute";
+import PublicRoute from "components/PublicRoute";
 
 const routes = [
   {
@@ -57,23 +59,12 @@ const routes = [
     key: "dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
-    component: <Dashboard />,
-  },
-  {
-    type: "collapse",
-    name: "Todo List",
-    key: "todo-list",
-    icon: <Icon fontSize="small">checklist</Icon>,
-    route: "/todo-list",
-    component: <TodoList />,
-  },
-  {
-    type: "collapse",
-    name: "Users Table",
-    key: "users-table",
-    icon: <Icon fontSize="small">people</Icon>,
-    route: "/users-table",
-    component: <UserTables />,
+    component: (
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    ),
+    protected: true, // Đánh dấu route cần bảo vệ
   },
   {
     type: "collapse",
@@ -81,7 +72,38 @@ const routes = [
     key: "tables",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/tables",
-    component: <Tables />,
+    component: (
+      <ProtectedRoute>
+        <Tables />
+      </ProtectedRoute>
+    ),
+    protected: true,
+  },
+  {
+    type: "collapse",
+    name: "Users Table",
+    key: "users-table",
+    icon: <Icon fontSize="small">people</Icon>,
+    route: "/users-table",
+    component: (
+      <ProtectedRoute>
+        <UsersTable />
+      </ProtectedRoute>
+    ),
+    protected: true,
+  },
+  {
+    type: "collapse",
+    name: "Todo List",
+    key: "todo-list",
+    icon: <Icon fontSize="small">checklist</Icon>,
+    route: "/todo-list",
+    component: (
+      <ProtectedRoute>
+        <TodoList />
+      </ProtectedRoute>
+    ),
+    protected: true,
   },
   {
     type: "collapse",
@@ -89,7 +111,12 @@ const routes = [
     key: "billing",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
-    component: <Billing />,
+    component: (
+      <ProtectedRoute>
+        <Billing />
+      </ProtectedRoute>
+    ),
+    protected: true,
   },
   {
     type: "collapse",
@@ -97,7 +124,12 @@ const routes = [
     key: "rtl",
     icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
     route: "/rtl",
-    component: <RTL />,
+    component: (
+      <ProtectedRoute>
+        <RTL />
+      </ProtectedRoute>
+    ),
+    protected: true,
   },
   {
     type: "collapse",
@@ -105,7 +137,12 @@ const routes = [
     key: "notifications",
     icon: <Icon fontSize="small">notifications</Icon>,
     route: "/notifications",
-    component: <Notifications />,
+    component: (
+      <ProtectedRoute>
+        <Notifications />
+      </ProtectedRoute>
+    ),
+    protected: true,
   },
   {
     type: "collapse",
@@ -113,7 +150,12 @@ const routes = [
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
-    component: <Profile />,
+    component: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+    protected: true,
   },
   {
     type: "collapse",
@@ -121,7 +163,12 @@ const routes = [
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
     route: "/authentication/sign-in",
-    component: <SignIn />,
+    component: (
+      <PublicRoute>
+        <SignIn />
+      </PublicRoute>
+    ),
+    protected: false, // Public route
   },
   {
     type: "collapse",
@@ -129,7 +176,12 @@ const routes = [
     key: "sign-up",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/sign-up",
-    component: <SignUp />,
+    component: (
+      <PublicRoute>
+        <SignUp />
+      </PublicRoute>
+    ),
+    protected: false, // Public route
   },
 ];
 

@@ -24,7 +24,9 @@ export default styled(Typography)(({ theme, ownerState }) => {
 
   const { gradients, transparent, white } = palette;
   const { fontWeightLight, fontWeightRegular, fontWeightMedium, fontWeightBold } = typography;
-  const { linearGradient } = functions;
+
+  // Safeguard để tránh lỗi khi functions undefined
+  const { linearGradient } = functions || {};
 
   // fontWeight styles
   const fontWeights = {
@@ -37,9 +39,15 @@ export default styled(Typography)(({ theme, ownerState }) => {
   // styles for the typography with textGradient={true}
   const gradientStyles = () => ({
     backgroundImage:
-      color !== "inherit" && color !== "text" && color !== "white" && gradients[color]
+      color !== "inherit" &&
+      color !== "text" &&
+      color !== "white" &&
+      gradients[color] &&
+      linearGradient
         ? linearGradient(gradients[color].main, gradients[color].state)
-        : linearGradient(gradients.dark.main, gradients.dark.state),
+        : linearGradient
+        ? linearGradient(gradients.dark.main, gradients.dark.state)
+        : `linear-gradient(195deg, ${gradients.dark.main}, ${gradients.dark.state})`,
     display: "inline-block",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: transparent.main,

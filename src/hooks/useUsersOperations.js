@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { useUsersDispatch, USERS_ACTIONS, useUsers } from "../context/UsersContext";
-import { usersApi } from "../services/usersApi";
+import { useUsersDispatch, USERS_ACTIONS, useUsers } from "../context/usersContext";
+import { usersApi } from "../api/services/usersService";
 
 export function useUsersOperations() {
   const dispatch = useUsersDispatch();
@@ -87,7 +87,7 @@ export function useUsersOperations() {
     [dispatch]
   );
 
-  // Các actions khác cho state management
+  // Utility actions
   const setSearchTerm = useCallback(
     (term) => {
       dispatch({ type: USERS_ACTIONS.SET_SEARCH_TERM, payload: term });
@@ -116,6 +116,10 @@ export function useUsersOperations() {
     [dispatch]
   );
 
+  const clearError = useCallback(() => {
+    dispatch({ type: USERS_ACTIONS.CLEAR_ERROR });
+  }, [dispatch]);
+
   return {
     loadUsers,
     createUser,
@@ -125,5 +129,6 @@ export function useUsersOperations() {
     setPage,
     setRowsPerPage,
     setOrder,
+    clearError,
   };
 }

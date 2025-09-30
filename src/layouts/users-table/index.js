@@ -13,8 +13,12 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
-import { UsersProvider, useUsers } from "./context/UsersContext";
-import { useUsersOperations } from "./hooks/useUsersOperations";
+
+// Import từ src/context thay vì local
+import { UsersProvider, useUsers } from "context";
+import { useUsersOperations } from "hooks/useUsersOperations";
+
+// Import local components
 import UserForm from "./components/UserForm";
 import tableData from "./data/tableData";
 
@@ -95,7 +99,7 @@ function UsersTableContent() {
     }
   };
 
-  // Thêm handler cho inline update
+  // Handler cho inline update
   const handleInlineUpdate = async (userId, userData) => {
     try {
       await updateUser(userId, userData);
@@ -131,12 +135,12 @@ function UsersTableContent() {
     setOrder(property, direction);
   };
 
-  // Sử dụng hook tableData với DataTable cũ
+  // Sử dụng hook tableData
   const { columns, rows, totalUsers } = tableData({
     onEdit: handleOpenEditDialog,
     onDelete: handleDeleteUser,
     onSort: handleSort,
-    onUpdate: handleInlineUpdate, // Thêm handler cho inline editing
+    onUpdate: handleInlineUpdate,
   });
 
   return (
@@ -171,7 +175,7 @@ function UsersTableContent() {
           </Grid>
         </MDBox>
 
-        {/* DataTable - sử dụng component cũ */}
+        {/* DataTable */}
         <Card>
           <MDBox>
             <DataTable
@@ -200,7 +204,7 @@ function UsersTableContent() {
           </MDBox>
         </Card>
 
-        {/* User Form Dialog với Formik */}
+        {/* User Form Dialog */}
         <UserForm
           open={openDialog}
           user={editingUser}

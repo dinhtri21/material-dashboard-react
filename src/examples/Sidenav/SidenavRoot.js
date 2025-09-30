@@ -24,11 +24,15 @@ export default styled(Drawer)(({ theme, ownerState }) => {
   const sidebarWidth = 250;
   const { transparent, gradients, white, background } = palette;
   const { xxl } = boxShadows;
-  const { pxToRem, linearGradient } = functions;
+
+  // Safeguard để tránh lỗi khi functions undefined
+  const { pxToRem, linearGradient } = functions || {};
 
   let backgroundValue = darkMode
     ? background.sidenav
-    : linearGradient(gradients.dark.main, gradients.dark.state);
+    : linearGradient
+    ? linearGradient(gradients.dark.main, gradients.dark.state)
+    : gradients.dark.main;
 
   if (transparentSidenav) {
     backgroundValue = transparent.main;
@@ -61,7 +65,7 @@ export default styled(Drawer)(({ theme, ownerState }) => {
   // styles for the sidenav when miniSidenav={true}
   const drawerCloseStyles = () => ({
     background: backgroundValue,
-    transform: `translateX(${pxToRem(-320)})`,
+    transform: pxToRem ? `translateX(${pxToRem(-320)})` : `translateX(-320px)`,
     transition: transitions.create("transform", {
       easing: transitions.easing.sharp,
       duration: transitions.duration.shorter,
@@ -71,7 +75,7 @@ export default styled(Drawer)(({ theme, ownerState }) => {
       boxShadow: transparentSidenav ? "none" : xxl,
       marginBottom: transparentSidenav ? 0 : "inherit",
       left: "0",
-      width: pxToRem(96),
+      width: pxToRem ? pxToRem(96) : "96px",
       overflowX: "hidden",
       transform: "translateX(0)",
       transition: transitions.create(["width", "background-color"], {

@@ -2,15 +2,6 @@
 =========================================================
 * Material Dashboard 2 React - v2.2.0
 =========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
 /**
@@ -120,6 +111,7 @@ const setDirection = (dispatch, value) => dispatch({ type: "DIRECTION", value })
 const setLayout = (dispatch, value) => dispatch({ type: "LAYOUT", value });
 const setDarkMode = (dispatch, value) => dispatch({ type: "DARKMODE", value });
 
+// Export Material UI Context
 export {
   MaterialUIControllerProvider,
   useMaterialUIController,
@@ -134,3 +126,9 @@ export {
   setLayout,
   setDarkMode,
 };
+
+// Re-export Users Context
+export * from "./usersContext";
+
+// Re-export Auth Context
+export * from "./authContext";

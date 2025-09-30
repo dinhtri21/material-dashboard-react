@@ -38,18 +38,30 @@ function DashboardLayout({ children }) {
 
   return (
     <MDBox
-      sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
-        p: 3,
-        position: "relative",
+      sx={({ breakpoints, transitions, functions }) => {
+        // Safeguard để tránh lỗi khi functions undefined
+        const { pxToRem } = functions || {};
 
-        [breakpoints.up("xl")]: {
-          marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
-          transition: transitions.create(["margin-left", "margin-right"], {
-            easing: transitions.easing.easeInOut,
-            duration: transitions.duration.standard,
-          }),
-        },
-      })}
+        if (!pxToRem) {
+          return {
+            p: 3,
+            position: "relative",
+          };
+        }
+
+        return {
+          p: 3,
+          position: "relative",
+
+          [breakpoints.up("xl")]: {
+            marginLeft: miniSidenav ? pxToRem(120) : pxToRem(274),
+            transition: transitions.create(["margin-left", "margin-right"], {
+              easing: transitions.easing.easeInOut,
+              duration: transitions.duration.standard,
+            }),
+          },
+        };
+      }}
     >
       {children}
     </MDBox>
