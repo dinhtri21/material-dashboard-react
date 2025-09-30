@@ -20,7 +20,9 @@ export const usersApi = {
           1970 + Math.floor(Math.random() * 30),
           Math.floor(Math.random() * 12),
           Math.floor(Math.random() * 28) + 1
-        ).toISOString().split('T')[0],
+        )
+          .toISOString()
+          .split("T")[0],
       }));
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -48,7 +50,7 @@ export const usersApi = {
       }
 
       const newUser = await response.json();
-      
+
       // Transform response
       return {
         id: newUser.id,
@@ -83,7 +85,7 @@ export const usersApi = {
       }
 
       const updatedUser = await response.json();
-      
+
       // Transform response
       return {
         id: updatedUser.id,
