@@ -95,9 +95,9 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "User API",
+    name: "User Table API",
     key: "user-table-api",
-    icon: <Icon fontSize="small">api</Icon>,
+    icon: <Icon fontSize="small">people</Icon>,
     route: "/user-table-api",
     component: (
       <ProtectedRoute>
