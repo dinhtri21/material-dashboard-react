@@ -45,6 +45,7 @@ import SignUp from "layouts/authentication/sign-up";
 import UsersTable from "layouts/users-table";
 import TodoList from "layouts/todo-list";
 import UserTableAPI from "layouts/user-table-api";
+import PuckEditor from "layouts/puck-editor";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -115,6 +116,19 @@ const routes = [
     component: (
       <ProtectedRoute>
         <TodoList />
+      </ProtectedRoute>
+    ),
+    protected: true,
+  },
+  {
+    type: "collapse",
+    name: "Puck Editor",
+    key: "puck-editor",
+    icon: <Icon fontSize="small">design_services</Icon>,
+    route: "/puck-editor",
+    component: (
+      <ProtectedRoute>
+        <PuckEditor />
       </ProtectedRoute>
     ),
     protected: true,
